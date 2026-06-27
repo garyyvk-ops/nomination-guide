@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance & Takaful Nomination Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            600: '#0F766E',
+                            700: '#0D9488',
+                        },
+                        blue: {
+                            700: '#1E40AF',
+                            800: '#1E3A8A',
+                        },
+                        amber: {
+                            500: '#F59E0B',
+                        },
+                        neutral: {
+                            50: '#FAFAF9',
+                            100: '#F5F5F4',
+                            800: '#292524',
+                            900: '#1C1917',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // Decision Tree Data
+        const decisionTree = {
+            start: {
+                id: 'start',
+                type: 'start',
+                title: 'Insurance & Takaful Nomination Guide',
+                body: 'This guide helps you understand how nomination may work for insurance and takaful.',
+                button: 'Start',
+                next: 'product_type'
+            },
+            
+            product_type: {
+                id: 'product_type',
+                type: 'question',
+                title: 'Which product are you asking about?',
+                options: [
+                    { label: 'Conventional Insurance', icon: 'shield', next: 'conventional_nomination_done' },
+                    { label: 'Takaful', icon: 'heart', next: 'takaful_option' }
+                ]
+            },
+            
+            conventional_nomination_done: {
+                id: 'conventional_nomination_done',
+                type: 'question',
+                title: 'Have you done the nomination?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'conventional_religion' },
+                    { label: 'Not yet', icon: 'x-circle', next: 'will_wasiat_done' }
+                ]
+            },
+            
+            conventional_religion: {
+                id: 'conventional_religion',
+                type: 'question',
+                title: 'Are you Muslim or Non-Muslim?',
+                options: [
+                    { label: 'Non-Muslim', icon: 'user', next: 'marital_status' },
+                    { label: 'Muslim', icon: 'mosque', next: 'non_statutory_trust' }
+                ]
+            },
+            
+            marital_status: {
+                id: 'marital_status',
+                type: 'question',
+                title: 'What was your status when making the nomination?',
+                options: [
+                    { label: 'Single', icon: 'user', next: 'has_children' },
+                    { label: 'Married', icon: 'users', next: 'married_nominee_type' }
+                ]
+            },
+            
+            has_children: {
+                id: 'has_children',
+                type: 'question',
+                title: 'Did you have children when making the nomination?',
+                options: [
+                    { label: 'Yes', icon: 'baby', next: 'single_with_children_nominee_type' },
+                    { label: 'No', icon: 'x', next: 'single_no_children_nominee_type' }
+                ]
+            },
+            
+            single_no_children_nominee_type: {
+                id: 'single_no_children_nominee_type',
+                type: 'question',
+                title: 'Who did you nominate?',
+                options: [
+                    { label: 'Parent', icon: 'users', next: 'statutory_trust' },
+                    { label: 'Sibling', icon: 'users', next: 'non_statutory_trust' },
+                    { label: 'Partner', icon: 'heart', next: 'non_statutory_trust' },
+                    { label: 'Friend', icon: 'user', next: 'non_statutory_trust' },
+                    { label: 'Others', icon: 'more-horizontal', next: 'help_review' }
+                ]
+            },
+            
+            single_with_children_nominee_type: {
+                id: 'single_with_children_nominee_type',
+                type: 'question',
+                title: 'Who did you nominate?',
+                options: [
+                    { label: 'Parent', icon: 'users', next: 'non_statutory_trust' },
+                    { label: 'Sibling', icon: 'users', next: 'non_statutory_trust' },
+                    { label: 'Partner', icon: 'heart', next: 'non_statutory_trust' },
+                    { label: 'Friend', icon: 'user', next: 'non_statutory_trust' },
+                    { label: 'Child', icon: 'baby', next: 'statutory_trust' },
+                    { label: 'Others', icon: 'more-horizontal', next: 'help_review' }
+                ]
+            },
+            
+            married_nominee_type: {
+                id: 'married_nominee_type',
+                type: 'question',
+                title: 'Who did you nominate?',
+                options: [
+                    { label: 'Parent', icon: 'users', next: 'non_statutory_trust' },
+                    { label: 'Sibling', icon: 'users', next: 'non_statutory_trust' },
+                    { label: 'Friend', icon: 'user', next: 'non_statutory_trust' },
+                    { label: 'Child', icon: 'baby', next: 'statutory_trust' },
+                    { label: 'Spouse', icon: 'heart', next: 'statutory_trust' },
+                    { label: 'Others', icon: 'more-horizontal', next: 'help_review' }
+                ]
+            },
+            
+            statutory_trust: {
+                id: 'statutory_trust',
+                type: 'explanation',
+                title: 'Statutory Trust',
+                body: 'A statutory trust means the nominee receives the policy money beneficially. The nominee may receive the full amount of the policy money payable. This arrangement is generally creditor-proof and the policy money does not form part of the deceased policy owner\'s estate.',
+                keyPoints: [
+                    'Absolute / beneficiary-style treatment',
+                    'Nominee receives the policy money',
+                    'Generally creditor-proof',
+                    'Policy money does not form part of the estate'
+                ],
+                moreInfo: 'For a statutory trust policy, the policy monies payable do not form part of the estate of the deceased policy owner and are not subjected to the deceased policy owner\'s debts. This helps ensure loved ones receive the policy money. However, a trust policy does not apply in the same way for a Muslim conventional policy owner. The nominee of a Muslim policy owner takes the policy money only as executor and must distribute it according to Islamic laws.',
+                nextQuestion: 'Does this serve your intention?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'completed' },
+                    { label: 'No', icon: 'x-circle', next: 'help_review' }
+                ]
+            },
+            
+            non_statutory_trust: {
+                id: 'non_statutory_trust',
+                type: 'explanation',
+                title: 'Non-Statutory Trust',
+                body: 'A non-statutory trust means the nominee does not simply receive the policy money beneficially. The nominee acts more like an executor and has a duty to distribute the money according to the Will, Distribution Act, or Islamic law depending on the situation.',
+                keyPoints: [
+                    'Executor-style role',
+                    'Not creditor-proof',
+                    'Policy money may form part of estate',
+                    'Money may need to be distributed after debts and liabilities'
+                ],
+                moreInfo: 'For a non-statutory trust policy, the policy monies payable will form part of the estate of the deceased policy owner and may be subjected to debts and liabilities. The executor may distribute remaining assets after debts and liabilities are discharged. For a Muslim conventional policy owner, the nominee also takes the policy money only as executor and must distribute it in accordance with Islamic laws.',
+                nextQuestion: 'Does this serve your intention?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'completed' },
+                    { label: 'No', icon: 'x-circle', next: 'help_review' }
+                ]
+            },
+            
+            takaful_option: {
+                id: 'takaful_option',
+                type: 'question',
+                title: 'Which takaful nomination option did you choose?',
+                options: [
+                    { label: 'Conditional Hibah', icon: 'gift', next: 'conditional_hibah' },
+                    { label: 'Wasi', icon: 'scale', next: 'wasi' }
+                ]
+            },
+            
+            conditional_hibah: {
+                id: 'conditional_hibah',
+                type: 'explanation',
+                title: 'Conditional Hibah',
+                body: 'Conditional Hibah is closer to an absolute beneficiary arrangement. The nominee receives the takaful benefits beneficially.',
+                keyPoints: [
+                    'Absolute / beneficiary-style treatment',
+                    'Nominee receives the takaful benefits',
+                    'Generally creditor-proof'
+                ],
+                moreInfo: 'For a nominee below 18 years old who receives takaful benefits beneficially under a conditional hibah, the company may pay the takaful benefits to the parent of the incompetent nominee, proper claimant, Public Trustee, or trust company nominated by the certificate owner, subject to the takaful benefit amount and applicable rules.',
+                nextQuestion: 'Does this serve your intention?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'completed' },
+                    { label: 'No', icon: 'x-circle', next: 'help_review' }
+                ]
+            },
+            
+            wasi: {
+                id: 'wasi',
+                type: 'explanation',
+                title: 'Wasi',
+                body: 'Under Wasi, the nominee acts as executor or pemegang amanah. The nominee receives the money subject to the duty to distribute it according to Fara\'id law or applicable estate law.',
+                keyPoints: [
+                    'Executor / trustee-style role',
+                    'Not creditor-proof in the same way',
+                    'Distribution duty applies'
+                ],
+                moreInfo: 'A nominee under Wasi of a takaful nomination should be above 18 and of sound mind. The nominee acts as executor / pemegang amanah to distribute the money according to Fara\'id law after liabilities are discharged. If the takaful owner was not Muslim, the nominee distributes according to applicable estate law such as the Probate and Administration Act 1959.',
+                nextQuestion: 'Does this serve your intention?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'completed' },
+                    { label: 'No', icon: 'x-circle', next: 'help_review' }
+                ]
+            },
+            
+            will_wasiat_done: {
+                id: 'will_wasiat_done',
+                type: 'question',
+                title: 'Have you completed your Will / Wasiat?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'grant_of_probate' },
+                    { label: 'Not yet', icon: 'x-circle', next: 'letter_of_administration' }
+                ]
+            },
+            
+            grant_of_probate: {
+                id: 'grant_of_probate',
+                type: 'explanation',
+                title: 'Grant of Probate',
+                body: 'If you have completed a Will or Wasiat, the executor appointed under it may need to apply for a Grant of Probate from court before the insurer can release the payable money.',
+                keyPoints: [
+                    'Executor applies to court',
+                    'Insurer releases money after required process',
+                    'Executor distributes according to Will, Distribution Act, or Fara\'id law depending on the situation'
+                ],
+                moreInfo: 'Application for Grant of Probate may take time depending on the size of assets, and legal fees may be required. For insurance owned by a non-Muslim, the executor appointed under the Will may distribute the policy money according to the Will after debts and liabilities are discharged. For a Muslim, the executor or Wasi appointed under the Wasiat may distribute one-third according to Wasiat, while the rest is distributed according to Fara\'id law.',
+                nextQuestion: 'Does this serve your intention?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'completed' },
+                    { label: 'No', icon: 'x-circle', next: 'help_review' }
+                ]
+            },
+            
+            letter_of_administration: {
+                id: 'letter_of_administration',
+                type: 'explanation',
+                title: 'Letter of Administration',
+                body: 'If there is no Will or Wasiat, an administrator appointed by family or court may need to apply for Letter of Administration before the insurer can release the payable money.',
+                keyPoints: [
+                    'Administrator may be appointed by family or court',
+                    'Court process may be required',
+                    'Distribution follows Distribution Act for non-Muslims or Fara\'id law for Muslims'
+                ],
+                moreInfo: 'Appointment of an administrator may take time because it may require mutual agreement of family members. For insurance owned by a non-Muslim, the administrator may distribute policy money according to the Distribution Act. For a Muslim, the administrator may distribute policy money according to Fara\'id law.',
+                nextQuestion: 'Does this serve your intention?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'completed' },
+                    { label: 'No', icon: 'x-circle', next: 'help_review' }
+                ]
+            },
+            
+            help_review: {
+                id: 'help_review',
+                type: 'explanation',
+                title: 'Let me help you review this',
+                body: 'Your current arrangement may not fully match your intention. You may need to review your nomination, Will/Wasiat, or estate planning arrangement so the money reaches the right people in the right way.',
+                primaryCTA: 'Speak to an adviser',
+                secondaryCTA: 'Restart guide',
+                options: [
+                    { label: 'Speak to an adviser', icon: 'phone', next: 'adviser_contact' },
+                    { label: 'Restart guide', icon: 'refresh-cw', next: 'start' }
+                ]
+            },
+            
+            adviser_contact: {
+                id: 'adviser_contact',
+                type: 'contact',
+                title: 'Speak to an adviser',
+                body: 'This situation may need a more personal review. Add your adviser or company contact details here so users know who to speak to next.',
+                contactDetails: {
+                    name: 'Your Adviser Name',
+                    phone: '+60 12-345-6789',
+                    email: 'adviser@example.com',
+                    whatsapp: '+60 12-345-6789'
+                }
+            },
+            
+            completed: {
+                id: 'completed',
+                type: 'ending',
+                title: 'You have completed the guide',
+                body: 'Based on your answers, the guide has shown the likely nomination treatment and whether it may match your intention. You may restart the guide to explore another scenario or speak to an adviser if you need personal advice.',
+                options: [
+                    { label: 'Restart guide', icon: 'refresh-cw', next: 'start' },
+                    { label: 'Speak to an adviser', icon: 'phone', next: 'adviser_contact' }
+                ]
+            }
+        };
+        
+        const getNode = (nodeId) => decisionTree[nodeId] || null;
+        
+        // Icon Component
+        const Icon = ({ name, className }) => {
+            useEffect(() => {
+                lucide.createIcons();
+            }, [name]);
+            return <i data-lucide={name} className={className}></i>;
+        };
+        
+        // Components
+        const StartScreen = ({ node, onStart }) => (
+            <div className="text-center py-8">
+                <div className="mb-6">
+                    <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">{node.title}</h1>
+                    <p className="text-lg text-neutral-600 max-w-md mx-auto">{node.body}</p>
+                </div>
+                <button onClick={onStart} className="inline-flex items-center px-8 py-4 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium text-lg shadow-sm">
+                    {node.button}
+                    <Icon name="arrow-right" className="ml-2 w-5 h-5" />
+                </button>
+            </div>
+        );
+        
+        const QuestionScreen = ({ node, onOptionClick }) => (
+            <div className="py-4">
+                <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-8">{node.title}</h2>
+                <div className="space-y-4">
+                    {node.options.map((option, index) => (
+                        <button key={index} onClick={() => onOptionClick(option.next, option.label)} className="w-full text-left p-6 bg-neutral-50 hover:bg-neutral-100 border-2 border-neutral-200 hover:border-teal-600 rounded-lg transition-all duration-200 group">
+                            <div className="flex items-center gap-4">
+                                <div className="flex-shrink-0 w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                                    <Icon name={option.icon} className="w-6 h-6" />
+                                </div>
+                                <div className="flex-1">
+                                    <span className="text-lg font-medium text-neutral-900 group-hover:text-teal-700">{option.label}</span>
+                                </div>
+                                <div className="flex-shrink-0 text-neutral-400 group-hover:text-teal-600">
+                                    <Icon name="chevron-right" className="w-5 h-5" />
+                                </div>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+        
+        const ExplanationScreen = ({ node, onOptionClick, showSummary = false, userPath = [], onToggleSummary }) => {
+            const [showMoreInfo, setShowMoreInfo] = useState(false);
+            
+            return (
+                <div className="py-4">
+                    <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-4">{node.title}</h2>
+                    <p className="text-lg text-neutral-600 mb-6">{node.body}</p>
+                    
+                    {node.keyPoints && (
+                        <div className="mb-6">
+                            <h3 className="text-sm font-semibold text-neutral-500 uppercase tracking-wide mb-3">Key Points</h3>
+                            <ul className="space-y-2">
+                                {node.keyPoints.map((point, index) => (
+                                    <li key={index} className="flex items-start gap-3">
+                                        <div className="flex-shrink-0 w-6 h-6 bg-teal-100 rounded-full flex items-center justify-center text-teal-600 mt-0.5">
+                                            <Icon name="check" className="w-4 h-4" />
+                                        </div>
+                                        <span className="text-neutral-700">{point}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                    
+                    {node.moreInfo && (
+                        <div className="mb-6">
+                            <button onClick={() => setShowMoreInfo(!showMoreInfo)} className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium transition-colors">
+                                {showMoreInfo ? <><Icon name="chevron-up" className="w-5 h-5" /> Show Less</> : <><Icon name="chevron-down" className="w-5 h-5" /> More Info</>}
+                            </button>
+                            {showMoreInfo && (
+                                <div className="mt-4 p-4 bg-neutral-50 rounded-lg border border-neutral-200">
+                                    <p className="text-neutral-600 text-sm leading-relaxed">{node.moreInfo}</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    
+                    {showSummary && userPath.length > 0 && (
+                        <div className="mb-6">
+                            <button onClick={onToggleSummary} className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium transition-colors mb-3">
+                                <Icon name="history" className="w-5 h-5" />
+                                {showSummary ? 'Hide' : 'Show'} Your Journey
+                                <Icon name={showSummary ? 'chevron-up' : 'chevron-down'} className="w-5 h-5" />
+                            </button>
+                            <div className="bg-neutral-50 rounded-lg border border-neutral-200 p-4">
+                                <h4 className="text-sm font-semibold text-neutral-500 uppercase tracking-wide mb-3">Your Path Through the Guide</h4>
+                                <div className="space-y-2">
+                                    {userPath.map((step, index) => (
+                                        <div key={index} className="flex items-start gap-3">
+                                            <div className="flex-shrink-0 w-6 h-6 bg-teal-100 rounded-full flex items-center justify-center text-teal-600 text-xs font-medium mt-0.5">{index + 1}</div>
+                                            <div className="flex-1">
+                                                <p className="text-sm font-medium text-neutral-900">{step.title}</p>
+                                                <p className="text-sm text-neutral-600">{step.answer}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {node.nextQuestion && (
+                        <div className="mt-8 pt-6 border-t border-neutral-200">
+                            <h3 className="text-lg font-semibold text-neutral-900 mb-4">{node.nextQuestion}</h3>
+                            <div className="space-y-3">
+                                {node.options.map((option, index) => (
+                                    <button key={index} onClick={() => onOptionClick(option.next, option.label)} className="w-full text-left p-4 bg-neutral-50 hover:bg-neutral-100 border-2 border-neutral-200 hover:border-teal-600 rounded-lg transition-all duration-200 group">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex-shrink-0 text-teal-600 group-hover:text-teal-700"><Icon name={option.icon} className="w-6 h-6" /></div>
+                                            <span className="font-medium text-neutral-900 group-hover:text-teal-700">{option.label}</span>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    
+                    {node.options && !node.nextQuestion && (
+                        <div className="mt-8 pt-6 border-t border-neutral-200 space-y-3">
+                            {node.options.map((option, index) => (
+                                <button key={index} onClick={() => onOptionClick(option.next, option.label)} className="w-full text-left p-4 bg-neutral-50 hover:bg-neutral-100 border-2 border-neutral-200 hover:border-teal-600 rounded-lg transition-all duration-200 group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex-shrink-0 text-teal-600 group-hover:text-teal-700"><Icon name={option.icon} className="w-6 h-6" /></div>
+                                        <span className="font-medium text-neutral-900 group-hover:text-teal-700">{option.label}</span>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+        
+        const ContactScreen = ({ node, onRestart }) => {
+            const { contactDetails } = node;
+            return (
+                <div className="py-4">
+                    <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-4">{node.title}</h2>
+                    <p className="text-lg text-neutral-600 mb-8">{node.body}</p>
+                    <div className="bg-gradient-to-br from-teal-50 to-blue-50 rounded-lg border border-teal-200 p-6 mb-6">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-12 h-12 bg-teal-600 rounded-full flex items-center justify-center text-white"><Icon name="user" className="w-6 h-6" /></div>
+                            <div>
+                                <h3 className="font-semibold text-neutral-900">{contactDetails.name}</h3>
+                                <p className="text-sm text-neutral-600">Financial Adviser</p>
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            <a href={`tel:${contactDetails.phone}`} className="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-teal-100 transition-colors">
+                                <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center text-teal-600"><Icon name="phone" className="w-5 h-5" /></div>
+                                <div><p className="text-sm text-neutral-500">Phone</p><p className="font-medium text-neutral-900">{contactDetails.phone}</p></div>
+                            </a>
+                            <a href={`mailto:${contactDetails.email}`} className="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-teal-100 transition-colors">
+                                <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center text-teal-600"><Icon name="mail" className="w-5 h-5" /></div>
+                                <div><p className="text-sm text-neutral-500">Email</p><p className="font-medium text-neutral-900">{contactDetails.email}</p></div>
+                            </a>
+                            <a href={`https://wa.me/${contactDetails.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-teal-100 transition-colors">
+                                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600"><Icon name="message-circle" className="w-5 h-5" /></div>
+                                <div><p className="text-sm text-neutral-500">WhatsApp</p><p className="font-medium text-neutral-900">{contactDetails.whatsapp}</p></div>
+                            </a>
+                        </div>
+                    </div>
+                    <button onClick={onRestart} className="w-full flex items-center justify-center gap-2 p-4 bg-neutral-100 hover:bg-neutral-200 rounded-lg transition-colors font-medium text-neutral-700">
+                        <Icon name="refresh-cw" className="w-5 h-5" /> Restart Guide
+                    </button>
+                </div>
+            );
+        };
+        
+        const ProgressBar = ({ currentStep, totalSteps }) => {
+            const progress = Math.min((currentStep / totalSteps) * 100, 100);
+            return (
+                <div className="mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-neutral-600">Progress</span>
+                        <span className="text-sm font-medium text-neutral-600">{Math.round(progress)}%</span>
+                    </div>
+                    <div className="w-full bg-neutral-200 rounded-full h-2">
+                        <div className="bg-teal-600 h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }}></div>
+                    </div>
+                </div>
+            );
+        };
+        
+        const Navigation = ({ onBack, onRestart, canGoBack }) => (
+            <div className="flex items-center justify-between mt-6 pt-4 border-t border-neutral-200">
+                <button onClick={onBack} disabled={!canGoBack} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${canGoBack ? 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700' : 'bg-neutral-50 text-neutral-400 cursor-not-allowed'}`}>
+                    <Icon name="arrow-left" className="w-5 h-5" /> Back
+                </button>
+                <button onClick={onRestart} className="flex items-center gap-2 px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg transition-colors">
+                    <Icon name="refresh-cw" className="w-5 h-5" /> Restart
+                </button>
+            </div>
+        );
+        
+        const Disclaimer = () => (
+            <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                    <Icon name="alert-circle" className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-amber-800 leading-relaxed">This guide is for general educational purposes only and should not be treated as legal, financial, or estate planning advice. Please consult a qualified adviser for your personal situation.</p>
+                </div>
+            </div>
+        );
+        
+        // Main App
+        const App = () => {
+            const [currentNodeId, setCurrentNodeId] = useState('start');
+            const [history, setHistory] = useState([]);
+            const [userPath, setUserPath] = useState([]);
+            const [showSummary, setShowSummary] = useState(false);
+            
+            const currentNode = getNode(currentNodeId);
+            
+            const handleOptionClick = (nextNodeId, optionLabel) => {
+                setHistory([...history, currentNodeId]);
+                setUserPath([...userPath, { nodeId: currentNodeId, title: currentNode.title, answer: optionLabel }]);
+                setCurrentNodeId(nextNodeId);
+            };
+            
+            const handleBack = () => {
+                if (history.length > 0) {
+                    const previousNodeId = history[history.length - 1];
+                    setHistory(history.slice(0, -1));
+                    setUserPath(userPath.slice(0, -1));
+                    setCurrentNodeId(previousNodeId);
+                }
+            };
+            
+            const handleRestart = () => {
+                setCurrentNodeId('start');
+                setHistory([]);
+                setUserPath([]);
+                setShowSummary(false);
+            };
+            
+            const renderScreen = () => {
+                if (!currentNode) return null;
+                
+                switch (currentNode.type) {
+                    case 'start':
+                        return <StartScreen node={currentNode} onStart={() => handleOptionClick(currentNode.next, 'Start')} />;
+                    case 'question':
+                        return <QuestionScreen node={currentNode} onOptionClick={handleOptionClick} />;
+                    case 'explanation':
+                        return <ExplanationScreen node={currentNode} onOptionClick={handleOptionClick} showSummary={showSummary} userPath={userPath} onToggleSummary={() => setShowSummary(!showSummary)} />;
+                    case 'contact':
+                        return <ContactScreen node={currentNode} onRestart={handleRestart} />;
+                    case 'ending':
+                        return <ExplanationScreen node={currentNode} onOptionClick={handleOptionClick} showSummary={true} userPath={userPath} onToggleSummary={() => setShowSummary(!showSummary)} />;
+                    default:
+                        return null;
+                }
+            };
+            
+            useEffect(() => {
+                lucide.createIcons();
+            }, [currentNodeId]);
+            
+            return (
+                <div className="min-h-screen bg-neutral-50">
+                    <div className="max-w-2xl mx-auto px-4 py-8">
+                        {currentNode.type !== 'start' && <ProgressBar currentStep={history.length + 1} totalSteps={Object.keys(decisionTree).length} />}
+                        <div className="bg-white rounded-lg shadow-sm p-6 md:p-8">{renderScreen()}</div>
+                        {currentNode.type !== 'start' && currentNode.type !== 'contact' && <Navigation onBack={handleBack} onRestart={handleRestart} canGoBack={history.length > 0} />}
+                        <Disclaimer />
+                    </div>
+                </div>
+            );
+        };
+        
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
