@@ -72,7 +72,7 @@ export const decisionTree = {
       { label: 'Sibling', icon: 'Users', next: 'non_statutory_trust' },
       { label: 'Partner', icon: 'Heart', next: 'non_statutory_trust' },
       { label: 'Friend', icon: 'User', next: 'non_statutory_trust' },
-      { label: 'Others', icon: 'MoreHorizontal', next: 'help_review' }
+      { label: 'Others', icon: 'MoreHorizontal', next: 'non_statutory_trust' }
     ]
   },
   
@@ -86,7 +86,7 @@ export const decisionTree = {
       { label: 'Partner', icon: 'Heart', next: 'non_statutory_trust' },
       { label: 'Friend', icon: 'User', next: 'non_statutory_trust' },
       { label: 'Child', icon: 'Baby', next: 'statutory_trust' },
-      { label: 'Others', icon: 'MoreHorizontal', next: 'help_review' }
+      { label: 'Others', icon: 'MoreHorizontal', next: 'non_statutory_trust' }
     ]
   },
   
@@ -100,7 +100,7 @@ export const decisionTree = {
       { label: 'Friend', icon: 'User', next: 'non_statutory_trust' },
       { label: 'Child', icon: 'Baby', next: 'statutory_trust' },
       { label: 'Spouse', icon: 'Heart', next: 'statutory_trust' },
-      { label: 'Others', icon: 'MoreHorizontal', next: 'help_review' }
+      { label: 'Others', icon: 'MoreHorizontal', next: 'non_statutory_trust' }
     ]
   },
   

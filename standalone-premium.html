@@ -176,7 +176,7 @@
             product_type: {
                 id: 'product_type',
                 type: 'question',
-                title: 'Which product are you asking about?',
+                title: 'What type of product did you signed up for?',
                 options: [
                     { label: 'Conventional Insurance', icon: 'shield', next: 'conventional_nomination_done' },
                     { label: 'Takaful', icon: 'heart', next: 'takaful_option' }
@@ -186,7 +186,7 @@
             conventional_nomination_done: {
                 id: 'conventional_nomination_done',
                 type: 'question',
-                title: 'Have you done the nomination?',
+                title: 'Have you nominate anyone under the policy?',
                 options: [
                     { label: 'Yes', icon: 'check-circle', next: 'conventional_religion' },
                     { label: 'Not yet', icon: 'x-circle', next: 'will_wasiat_done' }
@@ -267,7 +267,7 @@
             statutory_trust: {
                 id: 'statutory_trust',
                 type: 'explanation',
-                title: 'Statutory Trust',
+                title: 'You have a Statutory Trust Policy',
                 body: 'A statutory trust means the nominee receives the policy money beneficially. The nominee may receive the full amount of the policy money payable. This arrangement is generally creditor-proof and the policy money does not form part of the deceased policy owner\'s estate.',
                 keyPoints: [
                     'Absolute / beneficiary-style treatment',
@@ -286,7 +286,7 @@
             non_statutory_trust: {
                 id: 'non_statutory_trust',
                 type: 'explanation',
-                title: 'Non-Statutory Trust',
+                title: 'You have a Non Statutory Trust Policy',
                 body: 'A non-statutory trust means the nominee does not simply receive the policy money beneficially. The nominee acts more like an executor and has a duty to distribute the money according to the Will, Distribution Act, or Islamic law depending on the situation.',
                 keyPoints: [
                     'Executor-style role',
@@ -315,7 +315,7 @@
             conditional_hibah: {
                 id: 'conditional_hibah',
                 type: 'explanation',
-                title: 'Conditional Hibah',
+                title: 'Your nominee will own the monies rightfully!',
                 body: 'Conditional Hibah is closer to an absolute beneficiary arrangement. The nominee receives the takaful benefits beneficially.',
                 keyPoints: [
                     'Absolute / beneficiary-style treatment',
@@ -333,7 +333,7 @@
             wasi: {
                 id: 'wasi',
                 type: 'explanation',
-                title: 'Wasi',
+                title: 'Your nominee will have to distribute the monies',
                 body: 'Under Wasi, the nominee acts as executor or pemegang amanah. The nominee receives the money subject to the duty to distribute it according to Fara\'id law or applicable estate law.',
                 keyPoints: [
                     'Executor / trustee-style role',
@@ -361,7 +361,7 @@
             grant_of_probate: {
                 id: 'grant_of_probate',
                 type: 'explanation',
-                title: 'Grant of Probate',
+                title: 'Your nominee will need Grant of Probate',
                 body: 'If you have completed a Will or Wasiat, the executor appointed under it may need to apply for a Grant of Probate from court before the insurer can release the payable money.',
                 keyPoints: [
                     'Executor applies to court',
@@ -379,7 +379,7 @@
             letter_of_administration: {
                 id: 'letter_of_administration',
                 type: 'explanation',
-                title: 'Letter of Administration',
+                title: 'Your nominee will need Letter of Administration',
                 body: 'If there is no Will or Wasiat, an administrator appointed by family or court may need to apply for Letter of Administration before the insurer can release the payable money.',
                 keyPoints: [
                     'Administrator may be appointed by family or court',
@@ -398,36 +398,19 @@
                 id: 'help_review',
                 type: 'explanation',
                 title: 'Let me help you review this',
-                body: 'Your current arrangement may not fully match your intention. You may need to review your nomination, Will/Wasiat, or estate planning arrangement so the money reaches the right people in the right way.',
-                primaryCTA: 'Speak to an adviser',
-                secondaryCTA: 'Restart guide',
+                body: 'Let\'s review and make necessary changes, to ensure your estate planning is always align with your intentions.',
                 options: [
-                    { label: 'Speak to an adviser', icon: 'phone', next: 'adviser_contact' },
                     { label: 'Restart guide', icon: 'refresh-cw', next: 'start' }
                 ]
-            },
-            
-            adviser_contact: {
-                id: 'adviser_contact',
-                type: 'contact',
-                title: 'Speak to an adviser',
-                body: 'This situation may need a more personal review. Add your adviser or company contact details here so users know who to speak to next.',
-                contactDetails: {
-                    name: 'Your Adviser Name',
-                    phone: '+60 12-345-6789',
-                    email: 'adviser@example.com',
-                    whatsapp: '+60 12-345-6789'
-                }
             },
             
             completed: {
                 id: 'completed',
                 type: 'ending',
                 title: 'You have completed the guide',
-                body: 'Based on your answers, the guide has shown the likely nomination treatment and whether it may match your intention. You may restart the guide to explore another scenario or speak to an adviser if you need personal advice.',
+                body: 'Congratulations, you have made the right nomination, ongoing review is best to ensure your estate planning is always align with your intentions.',
                 options: [
-                    { label: 'Restart guide', icon: 'refresh-cw', next: 'start' },
-                    { label: 'Speak to an adviser', icon: 'phone', next: 'adviser_contact' }
+                    { label: 'Restart guide', icon: 'refresh-cw', next: 'start' }
                 ]
             }
         };
@@ -516,13 +499,15 @@
             
             return (
                 <div className="py-6 fade-in">
-                    {/* Result Badge */}
-                    <div className="mb-6">
-                        <div className="result-badge inline-flex items-center px-4 py-2 rounded-full text-white text-sm font-semibold">
-                            <Icon name="info" className="w-4 h-4 mr-2" />
-                            Likely Treatment
+                    {/* Result Badge - Only show for explanation nodes, not completed or help_review */}
+                    {node.id !== 'completed' && node.id !== 'help_review' && (
+                        <div className="mb-6">
+                            <div className="result-badge inline-flex items-center px-4 py-2 rounded-full text-white text-sm font-semibold">
+                                <Icon name="info" className="w-4 h-4 mr-2" />
+                                Likely Treatment
+                            </div>
                         </div>
-                    </div>
+                    )}
                     
                     <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)' }}>
                         {node.title}
@@ -571,7 +556,7 @@
                         </div>
                     )}
                     
-                    {showSummary && userPath.length > 0 && (
+                    {showSummary && userPath.length > 0 && node.id !== 'completed' && (
                         <div className="mb-8">
                             <button 
                                 onClick={onToggleSummary} 
@@ -644,85 +629,6 @@
                             ))}
                         </div>
                     )}
-                </div>
-            );
-        };
-        
-        const ContactScreen = ({ node, onRestart }) => {
-            const { contactDetails } = node;
-            return (
-                <div className="py-6 fade-in">
-                    <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)' }}>
-                        {node.title}
-                    </h2>
-                    <p className="text-lg text-slate-100 mb-8 leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.2)' }}>
-                        {node.body}
-                    </p>
-                    
-                    <div className="glass-panel-dark rounded-2xl p-8 mb-6">
-                        <div className="flex items-center gap-4 mb-8">
-                            <div className="w-16 h-16 bg-gradient-to-br from-teal-600 to-blue-700 rounded-2xl flex items-center justify-center text-white shadow-lg">
-                                <Icon name="user" className="w-8 h-8" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold text-white" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.3)' }}>{contactDetails.name}</h3>
-                                <p className="text-slate-200 font-medium">Financial Adviser</p>
-                            </div>
-                        </div>
-                        
-                        <div className="space-y-4">
-                            <a 
-                                href={`tel:${contactDetails.phone}`} 
-                                className="flex items-center gap-4 p-5 glass-panel rounded-xl hover:bg-white/10 transition-all duration-300 group"
-                            >
-                                <div className="w-12 h-12 bg-gradient-to-br from-teal-600/80 to-blue-700/80 rounded-xl flex items-center justify-center text-white backdrop-blur-sm">
-                                    <Icon name="phone" className="w-6 h-6" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-sm text-slate-300 font-medium">Phone</p>
-                                    <p className="font-bold text-white text-lg" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>{contactDetails.phone}</p>
-                                </div>
-                                <Icon name="arrow-right" className="w-5 h-5 text-slate-300 group-hover:text-teal-300" />
-                            </a>
-                            
-                            <a 
-                                href={`mailto:${contactDetails.email}`} 
-                                className="flex items-center gap-4 p-5 glass-panel rounded-xl hover:bg-white/10 transition-all duration-300 group"
-                            >
-                                <div className="w-12 h-12 bg-gradient-to-br from-teal-600/80 to-blue-700/80 rounded-xl flex items-center justify-center text-white backdrop-blur-sm">
-                                    <Icon name="mail" className="w-6 h-6" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-sm text-slate-300 font-medium">Email</p>
-                                    <p className="font-bold text-white text-lg" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>{contactDetails.email}</p>
-                                </div>
-                                <Icon name="arrow-right" className="w-5 h-5 text-slate-300 group-hover:text-teal-300" />
-                            </a>
-                            
-                            <a 
-                                href={`https://wa.me/${contactDetails.whatsapp.replace(/\D/g, '')}`} 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="flex items-center gap-4 p-5 glass-panel rounded-xl hover:bg-white/10 transition-all duration-300 group"
-                            >
-                                <div className="w-12 h-12 bg-gradient-to-br from-green-600/80 to-emerald-600/80 rounded-xl flex items-center justify-center text-white backdrop-blur-sm">
-                                    <Icon name="message-circle" className="w-6 h-6" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-sm text-slate-300 font-medium">WhatsApp</p>
-                                    <p className="font-bold text-white text-lg" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>{contactDetails.whatsapp}</p>
-                                </div>
-                                <Icon name="arrow-right" className="w-5 h-5 text-slate-300 group-hover:text-green-300" />
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <button 
-                        onClick={onRestart} 
-                        className="w-full flex items-center justify-center gap-3 p-5 glass-panel hover:bg-white/10 rounded-xl transition-colors font-semibold text-white text-lg"
-                    >
-                        <Icon name="refresh-cw" className="w-5 h-5" /> Restart Guide
-                    </button>
                 </div>
             );
         };
@@ -820,8 +726,6 @@
                         return <QuestionScreen node={currentNode} onOptionClick={handleOptionClick} />;
                     case 'explanation':
                         return <ExplanationScreen node={currentNode} onOptionClick={handleOptionClick} showSummary={showSummary} userPath={userPath} onToggleSummary={() => setShowSummary(!showSummary)} />;
-                    case 'contact':
-                        return <ContactScreen node={currentNode} onRestart={handleRestart} />;
                     case 'ending':
                         return <ExplanationScreen node={currentNode} onOptionClick={handleOptionClick} showSummary={true} userPath={userPath} onToggleSummary={() => setShowSummary(!showSummary)} />;
                     default:

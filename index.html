@@ -1,16 +1,769 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Insurance & Takaful Nomination Guide</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  </head>
-  <body>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            900: '#0F172A',
+                            800: '#1E293B',
+                        },
+                        teal: {
+                            600: '#0F766E',
+                            700: '#0D9488',
+                            800: '#115E59',
+                        },
+                        blue: {
+                            700: '#1E40AF',
+                            800: '#1E3A8A',
+                        },
+                        gold: {
+                            500: '#D97706',
+                            600: '#B45309',
+                        },
+                        amber: {
+                            500: '#F59E0B',
+                        },
+                        slate: {
+                            50: '#F8FAFC',
+                            100: '#F1F5F9',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1E293B',
+                            900: '#0F172A',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    backdropBlur: {
+                        xs: '2px',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.38);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+        }
+        
+        .glass-panel-dark {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        
+        .option-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(15, 23, 42, 0.42);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        .option-card:hover {
+            transform: translateY(-2px);
+            background: rgba(15, 23, 42, 0.58);
+            border-color: rgba(255, 255, 255, 0.28);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .trust-badge {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: white;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #0F766E 0%, #1E40AF 100%);
+        }
+        
+        .result-badge {
+            background: linear-gradient(135deg, #0F766E 0%, #1E40AF 100%);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+    </style>
+</head>
+<body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // Background Image Configuration - Easy to replace
+        // Malaysia-appropriate or neutral professional imagery
+        const BACKGROUND_IMAGES = {
+            default: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1920&q=80',
+            start: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1920&q=80',
+            conventional: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1920&q=80',
+            takaful: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1920&q=80',
+            probate: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1920&q=80',
+            contact: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1920&q=80',
+            family: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1920&q=80'
+        };
+        
+        // Helper function to get background based on current node
+        const getBackgroundForNode = (nodeId) => {
+            const backgroundMap = {
+                'start': BACKGROUND_IMAGES.start,
+                'product_type': BACKGROUND_IMAGES.start,
+                'conventional_nomination_done': BACKGROUND_IMAGES.conventional,
+                'conventional_religion': BACKGROUND_IMAGES.conventional,
+                'marital_status': BACKGROUND_IMAGES.family,
+                'has_children': BACKGROUND_IMAGES.family,
+                'single_no_children_nominee_type': BACKGROUND_IMAGES.family,
+                'single_with_children_nominee_type': BACKGROUND_IMAGES.family,
+                'married_nominee_type': BACKGROUND_IMAGES.family,
+                'statutory_trust': BACKGROUND_IMAGES.conventional,
+                'non_statutory_trust': BACKGROUND_IMAGES.conventional,
+                'takaful_option': BACKGROUND_IMAGES.takaful,
+                'conditional_hibah': BACKGROUND_IMAGES.takaful,
+                'wasi': BACKGROUND_IMAGES.takaful,
+                'will_wasiat_done': BACKGROUND_IMAGES.probate,
+                'grant_of_probate': BACKGROUND_IMAGES.probate,
+                'letter_of_administration': BACKGROUND_IMAGES.probate,
+                'help_review': BACKGROUND_IMAGES.default,
+                'adviser_contact': BACKGROUND_IMAGES.contact,
+                'completed': BACKGROUND_IMAGES.default
+            };
+            return backgroundMap[nodeId] || BACKGROUND_IMAGES.default;
+        };
+        
+        // Decision Tree Data - UNCHANGED LOGIC
+        const decisionTree = {
+            start: {
+                id: 'start',
+                type: 'start',
+                title: 'Insurance & Takaful Nomination Guide',
+                body: 'Did you make the right nomination? Let\'s find out',
+                button: 'Start',
+                next: 'product_type'
+            },
+            
+            product_type: {
+                id: 'product_type',
+                type: 'question',
+                title: 'What type of product did you signed up for?',
+                options: [
+                    { label: 'Conventional Insurance', icon: 'shield', next: 'conventional_nomination_done' },
+                    { label: 'Takaful', icon: 'heart', next: 'takaful_option' }
+                ]
+            },
+            
+            conventional_nomination_done: {
+                id: 'conventional_nomination_done',
+                type: 'question',
+                title: 'Have you nominate anyone under the policy?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'conventional_religion' },
+                    { label: 'Not yet', icon: 'x-circle', next: 'will_wasiat_done' }
+                ]
+            },
+            
+            conventional_religion: {
+                id: 'conventional_religion',
+                type: 'question',
+                title: 'Are you Muslim or Non-Muslim?',
+                options: [
+                    { label: 'Non-Muslim', icon: 'user', next: 'marital_status' },
+                    { label: 'Muslim', icon: 'mosque', next: 'non_statutory_trust' }
+                ]
+            },
+            
+            marital_status: {
+                id: 'marital_status',
+                type: 'question',
+                title: 'What was your status when making the nomination?',
+                options: [
+                    { label: 'Single', icon: 'user', next: 'has_children' },
+                    { label: 'Married', icon: 'users', next: 'married_nominee_type' }
+                ]
+            },
+            
+            has_children: {
+                id: 'has_children',
+                type: 'question',
+                title: 'Did you have children when making the nomination?',
+                options: [
+                    { label: 'Yes', icon: 'baby', next: 'single_with_children_nominee_type' },
+                    { label: 'No', icon: 'x', next: 'single_no_children_nominee_type' }
+                ]
+            },
+            
+            single_no_children_nominee_type: {
+                id: 'single_no_children_nominee_type',
+                type: 'question',
+                title: 'Who did you nominate?',
+                options: [
+                    { label: 'Parent', icon: 'users', next: 'statutory_trust' },
+                    { label: 'Sibling', icon: 'users', next: 'non_statutory_trust' },
+                    { label: 'Partner', icon: 'heart', next: 'non_statutory_trust' },
+                    { label: 'Friend', icon: 'user', next: 'non_statutory_trust' },
+                    { label: 'Others', icon: 'more-horizontal', next: 'non_statutory_trust' }
+                ]
+            },
+            
+            single_with_children_nominee_type: {
+                id: 'single_with_children_nominee_type',
+                type: 'question',
+                title: 'Who did you nominate?',
+                options: [
+                    { label: 'Parent', icon: 'users', next: 'non_statutory_trust' },
+                    { label: 'Sibling', icon: 'users', next: 'non_statutory_trust' },
+                    { label: 'Partner', icon: 'heart', next: 'non_statutory_trust' },
+                    { label: 'Friend', icon: 'user', next: 'non_statutory_trust' },
+                    { label: 'Child', icon: 'baby', next: 'statutory_trust' },
+                    { label: 'Others', icon: 'more-horizontal', next: 'non_statutory_trust' }
+                ]
+            },
+            
+            married_nominee_type: {
+                id: 'married_nominee_type',
+                type: 'question',
+                title: 'Who did you nominate?',
+                options: [
+                    { label: 'Parent', icon: 'users', next: 'non_statutory_trust' },
+                    { label: 'Sibling', icon: 'users', next: 'non_statutory_trust' },
+                    { label: 'Friend', icon: 'user', next: 'non_statutory_trust' },
+                    { label: 'Child', icon: 'baby', next: 'statutory_trust' },
+                    { label: 'Spouse', icon: 'heart', next: 'statutory_trust' },
+                    { label: 'Others', icon: 'more-horizontal', next: 'non_statutory_trust' }
+                ]
+            },
+            
+            statutory_trust: {
+                id: 'statutory_trust',
+                type: 'explanation',
+                title: 'You have a Statutory Trust Policy',
+                body: 'A statutory trust means the nominee receives the policy money beneficially. The nominee may receive the full amount of the policy money payable. This arrangement is generally creditor-proof and the policy money does not form part of the deceased policy owner\'s estate.',
+                keyPoints: [
+                    'Absolute / beneficiary-style treatment',
+                    'Nominee receives the policy money',
+                    'Generally creditor-proof',
+                    'Policy money does not form part of the estate'
+                ],
+                moreInfo: 'For a statutory trust policy, the policy monies payable do not form part of the estate of the deceased policy owner and are not subjected to the deceased policy owner\'s debts. This helps ensure loved ones receive the policy money. However, a trust policy does not apply in the same way for a Muslim conventional policy owner. The nominee of a Muslim policy owner takes the policy money only as executor and must distribute it according to Islamic laws.',
+                nextQuestion: 'Does this serve your intention?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'completed' },
+                    { label: 'No', icon: 'x-circle', next: 'help_review' }
+                ]
+            },
+            
+            non_statutory_trust: {
+                id: 'non_statutory_trust',
+                type: 'explanation',
+                title: 'You have a Non Statutory Trust Policy',
+                body: 'A non-statutory trust means the nominee does not simply receive the policy money beneficially. The nominee acts more like an executor and has a duty to distribute the money according to the Will, Distribution Act, or Islamic law depending on the situation.',
+                keyPoints: [
+                    'Executor-style role',
+                    'Not creditor-proof',
+                    'Policy money may form part of estate',
+                    'Money may need to be distributed after debts and liabilities'
+                ],
+                moreInfo: 'For a non-statutory trust policy, the policy monies payable will form part of the estate of the deceased policy owner and may be subjected to debts and liabilities. The executor may distribute remaining assets after debts and liabilities are discharged. For a Muslim conventional policy owner, the nominee also takes the policy money only as executor and must distribute it in accordance with Islamic laws.',
+                nextQuestion: 'Does this serve your intention?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'completed' },
+                    { label: 'No', icon: 'x-circle', next: 'help_review' }
+                ]
+            },
+            
+            takaful_option: {
+                id: 'takaful_option',
+                type: 'question',
+                title: 'Which takaful nomination option did you choose?',
+                options: [
+                    { label: 'Conditional Hibah', icon: 'gift', next: 'conditional_hibah' },
+                    { label: 'Wasi', icon: 'scale', next: 'wasi' }
+                ]
+            },
+            
+            conditional_hibah: {
+                id: 'conditional_hibah',
+                type: 'explanation',
+                title: 'Your nominee will own the monies rightfully!',
+                body: 'Conditional Hibah is closer to an absolute beneficiary arrangement. The nominee receives the takaful benefits beneficially.',
+                keyPoints: [
+                    'Absolute / beneficiary-style treatment',
+                    'Nominee receives the takaful benefits',
+                    'Generally creditor-proof'
+                ],
+                moreInfo: 'For a nominee below 18 years old who receives takaful benefits beneficially under a conditional hibah, the company may pay the takaful benefits to the parent of the incompetent nominee, proper claimant, Public Trustee, or trust company nominated by the certificate owner, subject to the takaful benefit amount and applicable rules.',
+                nextQuestion: 'Does this serve your intention?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'completed' },
+                    { label: 'No', icon: 'x-circle', next: 'help_review' }
+                ]
+            },
+            
+            wasi: {
+                id: 'wasi',
+                type: 'explanation',
+                title: 'Your nominee will have to distribute the monies',
+                body: 'Under Wasi, the nominee acts as executor or pemegang amanah. The nominee receives the money subject to the duty to distribute it according to Fara\'id law or applicable estate law.',
+                keyPoints: [
+                    'Executor / trustee-style role',
+                    'Not creditor-proof in the same way',
+                    'Distribution duty applies'
+                ],
+                moreInfo: 'A nominee under Wasi of a takaful nomination should be above 18 and of sound mind. The nominee acts as executor / pemegang amanah to distribute the money according to Fara\'id law after liabilities are discharged. If the takaful owner was not Muslim, the nominee distributes according to applicable estate law such as the Probate and Administration Act 1959.',
+                nextQuestion: 'Does this serve your intention?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'completed' },
+                    { label: 'No', icon: 'x-circle', next: 'help_review' }
+                ]
+            },
+            
+            will_wasiat_done: {
+                id: 'will_wasiat_done',
+                type: 'question',
+                title: 'Have you completed your Will / Wasiat?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'grant_of_probate' },
+                    { label: 'Not yet', icon: 'x-circle', next: 'letter_of_administration' }
+                ]
+            },
+            
+            grant_of_probate: {
+                id: 'grant_of_probate',
+                type: 'explanation',
+                title: 'Your nominee will need Grant of Probate',
+                body: 'If you have completed a Will or Wasiat, the executor appointed under it may need to apply for a Grant of Probate from court before the insurer can release the payable money.',
+                keyPoints: [
+                    'Executor applies to court',
+                    'Insurer releases money after required process',
+                    'Executor distributes according to Will, Distribution Act, or Fara\'id law depending on the situation'
+                ],
+                moreInfo: 'Application for Grant of Probate may take time depending on the size of assets, and legal fees may be required. For insurance owned by a non-Muslim, the executor appointed under the Will may distribute the policy money according to the Will after debts and liabilities are discharged. For a Muslim, the executor or Wasi appointed under the Wasiat may distribute one-third according to Wasiat, while the rest is distributed according to Fara\'id law.',
+                nextQuestion: 'Does this serve your intention?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'completed' },
+                    { label: 'No', icon: 'x-circle', next: 'help_review' }
+                ]
+            },
+            
+            letter_of_administration: {
+                id: 'letter_of_administration',
+                type: 'explanation',
+                title: 'Your nominee will need Letter of Administration',
+                body: 'If there is no Will or Wasiat, an administrator appointed by family or court may need to apply for Letter of Administration before the insurer can release the payable money.',
+                keyPoints: [
+                    'Administrator may be appointed by family or court',
+                    'Court process may be required',
+                    'Distribution follows Distribution Act for non-Muslims or Fara\'id law for Muslims'
+                ],
+                moreInfo: 'Appointment of an administrator may take time because it may require mutual agreement of family members. For insurance owned by a non-Muslim, the administrator may distribute policy money according to the Distribution Act. For a Muslim, the administrator may distribute policy money according to Fara\'id law.',
+                nextQuestion: 'Does this serve your intention?',
+                options: [
+                    { label: 'Yes', icon: 'check-circle', next: 'completed' },
+                    { label: 'No', icon: 'x-circle', next: 'help_review' }
+                ]
+            },
+            
+            help_review: {
+                id: 'help_review',
+                type: 'explanation',
+                title: 'Let me help you review this',
+                body: 'Let\'s review and make necessary changes, to ensure your estate planning is always align with your intentions.',
+                options: [
+                    { label: 'Restart guide', icon: 'refresh-cw', next: 'start' }
+                ]
+            },
+            
+            completed: {
+                id: 'completed',
+                type: 'ending',
+                title: 'You have completed the guide',
+                body: 'Congratulations, you have made the right nomination, ongoing review is best to ensure your estate planning is always align with your intentions.',
+                options: [
+                    { label: 'Restart guide', icon: 'refresh-cw', next: 'start' }
+                ]
+            }
+        };
+        
+        const getNode = (nodeId) => decisionTree[nodeId] || null;
+        
+        // Icon Component
+        const Icon = ({ name, className }) => {
+            useEffect(() => {
+                lucide.createIcons();
+            }, [name]);
+            return <i data-lucide={name} className={className}></i>;
+        };
+        
+        // Premium Components
+        const StartScreen = ({ node, onStart }) => (
+            <div className="text-center py-12 fade-in">
+                <div className="mb-8">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)' }}>
+                        {node.title}
+                    </h1>
+                    <p className="text-xl text-slate-100 max-w-lg mx-auto leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.2)' }}>
+                        {node.body}
+                    </p>
+                </div>
+                
+                {/* Trust Indicators */}
+                <div className="flex flex-wrap justify-center gap-3 mb-8">
+                    <div className="trust-badge px-4 py-2 rounded-full text-sm font-medium">
+                        <span className="text-teal-300 mr-1">✓</span> Guided decision flow
+                    </div>
+                    <div className="trust-badge px-4 py-2 rounded-full text-sm font-medium">
+                        <span className="text-teal-300 mr-1">✓</span> Educational only
+                    </div>
+                    <div className="trust-badge px-4 py-2 rounded-full text-sm font-medium">
+                        <span className="text-teal-300 mr-1">✓</span> Insurance & takaful scenarios
+                    </div>
+                </div>
+                
+                <button 
+                    onClick={onStart} 
+                    className="inline-flex items-center px-10 py-4 bg-gradient-to-r from-teal-600 to-blue-700 text-white rounded-xl hover:from-teal-700 hover:to-blue-800 transition-all duration-300 font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+                >
+                    {node.button}
+                    <Icon name="arrow-right" className="ml-3 w-5 h-5" />
+                </button>
+            </div>
+        );
+        
+        const QuestionScreen = ({ node, onOptionClick }) => (
+            <div className="py-6 fade-in">
+                <div className="mb-2">
+                    <span className="text-xs font-semibold text-teal-300 uppercase tracking-widest">Question</span>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-8 leading-tight" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)' }}>
+                    {node.title}
+                </h2>
+                <div className="space-y-4">
+                    {node.options.map((option, index) => (
+                        <button 
+                            key={index} 
+                            onClick={() => onOptionClick(option.next, option.label)} 
+                            className="option-card w-full text-left p-6 rounded-xl transition-all duration-300 group"
+                        >
+                            <div className="flex items-center gap-5">
+                                <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-teal-600/80 to-blue-700/80 rounded-xl flex items-center justify-center text-white backdrop-blur-sm transition-all duration-300">
+                                    <Icon name={option.icon} className="w-7 h-7" />
+                                </div>
+                                <div className="flex-1">
+                                    <span className="text-xl font-semibold text-white group-hover:text-teal-200" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.2)' }}>
+                                        {option.label}
+                                    </span>
+                                </div>
+                                <div className="flex-shrink-0 text-slate-300 group-hover:text-teal-300 transition-colors">
+                                    <Icon name="chevron-right" className="w-6 h-6" />
+                                </div>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+        
+        const ExplanationScreen = ({ node, onOptionClick, showSummary = false, userPath = [], onToggleSummary }) => {
+            const [showMoreInfo, setShowMoreInfo] = useState(false);
+            
+            return (
+                <div className="py-6 fade-in">
+                    {/* Result Badge - Only show for explanation nodes, not completed or help_review */}
+                    {node.id !== 'completed' && node.id !== 'help_review' && (
+                        <div className="mb-6">
+                            <div className="result-badge inline-flex items-center px-4 py-2 rounded-full text-white text-sm font-semibold">
+                                <Icon name="info" className="w-4 h-4 mr-2" />
+                                Likely Treatment
+                            </div>
+                        </div>
+                    )}
+                    
+                    <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)' }}>
+                        {node.title}
+                    </h2>
+                    <p className="text-lg text-slate-100 mb-8 leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.2)' }}>
+                        {node.body}
+                    </p>
+                    
+                    {node.keyPoints && (
+                        <div className="mb-8">
+                            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-widest mb-4">Key Points</h3>
+                            <div className="grid gap-3">
+                                {node.keyPoints.map((point, index) => (
+                                    <div key={index} className="flex items-start gap-4 p-4 glass-panel-dark rounded-xl">
+                                        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-teal-500 to-blue-600 rounded-lg flex items-center justify-center text-white mt-0.5">
+                                            <Icon name="check" className="w-5 h-5" />
+                                        </div>
+                                        <span className="text-slate-100 font-medium leading-relaxed" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>{point}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    
+                    {node.moreInfo && (
+                        <div className="mb-8">
+                            <button 
+                                onClick={() => setShowMoreInfo(!showMoreInfo)} 
+                                className="flex items-center gap-2 text-teal-300 hover:text-teal-200 font-semibold transition-colors"
+                            >
+                                {showMoreInfo ? (
+                                    <>
+                                        <Icon name="chevron-up" className="w-5 h-5" /> Show Less
+                                    </>
+                                ) : (
+                                    <>
+                                        <Icon name="chevron-down" className="w-5 h-5" /> More Info
+                                    </>
+                                )}
+                            </button>
+                            {showMoreInfo && (
+                                <div className="mt-4 p-6 glass-panel-dark rounded-xl">
+                                    <p className="text-slate-100 leading-relaxed" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>{node.moreInfo}</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    
+                    {showSummary && userPath.length > 0 && node.id !== 'completed' && (
+                        <div className="mb-8">
+                            <button 
+                                onClick={onToggleSummary} 
+                                className="flex items-center gap-2 text-teal-300 hover:text-teal-200 font-semibold transition-colors mb-4"
+                            >
+                                <Icon name="history" className="w-5 h-5" />
+                                {showSummary ? 'Hide' : 'Show'} Your Journey
+                                <Icon name={showSummary ? 'chevron-up' : 'chevron-down'} className="w-5 h-5" />
+                            </button>
+                            <div className="glass-panel-dark rounded-xl p-6">
+                                <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-widest mb-4">Your Path Through the Guide</h4>
+                                <div className="space-y-3">
+                                    {userPath.map((step, index) => (
+                                        <div key={index} className="flex items-start gap-4">
+                                            <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-teal-500 to-blue-600 rounded-lg flex items-center justify-center text-white text-xs font-bold mt-0.5">
+                                                {index + 1}
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-sm font-semibold text-white" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>{step.title}</p>
+                                                <p className="text-sm text-slate-200">{step.answer}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {node.nextQuestion && (
+                        <div className="mt-8 pt-8 border-t border-white/20">
+                            <h3 className="text-xl font-bold text-white mb-6" style={{ textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>{node.nextQuestion}</h3>
+                            <div className="space-y-3">
+                                {node.options.map((option, index) => (
+                                    <button 
+                                        key={index} 
+                                        onClick={() => onOptionClick(option.next, option.label)} 
+                                        className="option-card w-full text-left p-5 rounded-xl transition-all duration-300 group"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex-shrink-0 text-teal-300 group-hover:text-teal-200">
+                                                <Icon name={option.icon} className="w-6 h-6" />
+                                            </div>
+                                            <span className="font-semibold text-white group-hover:text-teal-200 text-lg" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.2)' }}>
+                                                {option.label}
+                                            </span>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    
+                    {node.options && !node.nextQuestion && (
+                        <div className="mt-8 pt-8 border-t border-white/20 space-y-3">
+                            {node.options.map((option, index) => (
+                                <button 
+                                    key={index} 
+                                    onClick={() => onOptionClick(option.next, option.label)} 
+                                    className="option-card w-full text-left p-5 rounded-xl transition-all duration-300 group"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex-shrink-0 text-teal-300 group-hover:text-teal-200">
+                                            <Icon name={option.icon} className="w-6 h-6" />
+                                        </div>
+                                        <span className="font-semibold text-white group-hover:text-teal-200 text-lg" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.2)' }}>
+                                            {option.label}
+                                        </span>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+        
+        const ProgressBar = ({ currentStep, totalSteps }) => {
+            const progress = Math.min((currentStep / totalSteps) * 100, 100);
+            return (
+                <div className="mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-semibold text-slate-300 uppercase tracking-widest">Progress</span>
+                        <span className="text-xs font-semibold text-slate-300">{Math.round(progress)}%</span>
+                    </div>
+                    <div className="w-full bg-white/20 rounded-full h-1.5">
+                        <div 
+                            className="progress-bar h-1.5 rounded-full transition-all duration-500 ease-out" 
+                            style={{ width: `${progress}%` }}
+                        ></div>
+                    </div>
+                </div>
+            );
+        };
+        
+        const Navigation = ({ onBack, onRestart, canGoBack }) => (
+            <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/20">
+                <button 
+                    onClick={onBack} 
+                    disabled={!canGoBack} 
+                    className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 ${
+                        canGoBack 
+                            ? 'glass-panel hover:bg-white/10 text-white font-semibold' 
+                            : 'glass-panel text-slate-400 cursor-not-allowed'
+                    }`}
+                >
+                    <Icon name="arrow-left" className="w-5 h-5" /> Back
+                </button>
+                <button 
+                    onClick={onRestart} 
+                    className="flex items-center gap-2 px-6 py-3 glass-panel hover:bg-white/10 text-white rounded-xl transition-all duration-300 font-semibold"
+                >
+                    <Icon name="refresh-cw" className="w-5 h-5" /> Restart
+                </button>
+            </div>
+        );
+        
+        const Disclaimer = () => (
+            <div className="mt-8 p-4 glass-panel rounded-xl">
+                <div className="flex items-start gap-3">
+                    <Icon name="alert-circle" className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-slate-200 leading-relaxed" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
+                        This guide is for general educational purposes only and should not be treated as legal, financial, or estate planning advice. Please consult a qualified adviser for your personal situation.
+                    </p>
+                </div>
+            </div>
+        );
+        
+        // Main App with Premium Layout
+        const App = () => {
+            const [currentNodeId, setCurrentNodeId] = useState('start');
+            const [history, setHistory] = useState([]);
+            const [userPath, setUserPath] = useState([]);
+            const [showSummary, setShowSummary] = useState(false);
+            
+            const currentNode = getNode(currentNodeId);
+            const backgroundImage = getBackgroundForNode(currentNodeId);
+            
+            const handleOptionClick = (nextNodeId, optionLabel) => {
+                setHistory([...history, currentNodeId]);
+                setUserPath([...userPath, { nodeId: currentNodeId, title: currentNode.title, answer: optionLabel }]);
+                setCurrentNodeId(nextNodeId);
+            };
+            
+            const handleBack = () => {
+                if (history.length > 0) {
+                    const previousNodeId = history[history.length - 1];
+                    setHistory(history.slice(0, -1));
+                    setUserPath(userPath.slice(0, -1));
+                    setCurrentNodeId(previousNodeId);
+                }
+            };
+            
+            const handleRestart = () => {
+                setCurrentNodeId('start');
+                setHistory([]);
+                setUserPath([]);
+                setShowSummary(false);
+            };
+            
+            const renderScreen = () => {
+                if (!currentNode) return null;
+                
+                switch (currentNode.type) {
+                    case 'start':
+                        return <StartScreen node={currentNode} onStart={() => handleOptionClick(currentNode.next, 'Start')} />;
+                    case 'question':
+                        return <QuestionScreen node={currentNode} onOptionClick={handleOptionClick} />;
+                    case 'explanation':
+                        return <ExplanationScreen node={currentNode} onOptionClick={handleOptionClick} showSummary={showSummary} userPath={userPath} onToggleSummary={() => setShowSummary(!showSummary)} />;
+                    case 'ending':
+                        return <ExplanationScreen node={currentNode} onOptionClick={handleOptionClick} showSummary={true} userPath={userPath} onToggleSummary={() => setShowSummary(!showSummary)} />;
+                    default:
+                        return null;
+                }
+            };
+            
+            useEffect(() => {
+                lucide.createIcons();
+            }, [currentNodeId]);
+            
+            return (
+                <div 
+                    className="min-h-screen bg-cover bg-center bg-no-repeat relative"
+                    style={{ backgroundImage: `url('${backgroundImage}')` }}
+                >
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-navy-900/82 via-navy-900/58 to-navy-900/35"></div>
+                    
+                    {/* Content */}
+                    <div className="relative min-h-screen flex items-center justify-center p-4 md:p-8">
+                        <div className="w-full max-w-2xl">
+                            {/* Transparent Content Area */}
+                            <div className="p-6 md:p-10">
+                                {currentNode.type !== 'start' && <ProgressBar currentStep={history.length + 1} totalSteps={Object.keys(decisionTree).length} />}
+                                {renderScreen()}
+                                {currentNode.type !== 'start' && currentNode.type !== 'contact' && (
+                                    <Navigation onBack={handleBack} onRestart={handleRestart} canGoBack={history.length > 0} />
+                                )}
+                                <Disclaimer />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
 </html>
